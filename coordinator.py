@@ -5,6 +5,9 @@ from influxdb import InfluxDBClient
 import subprocess  # Import the subprocess module
 import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def fetch_switches():
     try:
@@ -24,11 +27,6 @@ def fetch_switches():
     except Error as e:
         print(f"Error fetching switches: {e}")
         return []
-
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def callback(ch, method, properties, body):
     try:
@@ -53,13 +51,6 @@ def get_temperature(switch_id):
     return temperature
 
 
-
-
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 def write_to_influxdb(switch_id, temperature):
     try:
         client = InfluxDBClient(host='localhost', port=8086, username='admin', password='password', database='temperature_db')
@@ -78,24 +69,6 @@ def write_to_influxdb(switch_id, temperature):
         logger.info(f"Temperature data written to InfluxDB for switch: {switch_id}")
     except Exception as e:
         logger.error(f"Error writing to InfluxDB: {e}")
-
-def fetch_switches():
-    try:
-        # Connect to PostgreSQL
-        conn = psycopg2.connect(
-            dbname="postgres",    # Database name
-            user="postgres",      # PostgreSQL username
-            password="password",  # PostgreSQL password
-            host="localhost"      # Host
-        )
-        with conn.cursor() as cursor:
-            # Fetch switch data from the switches table
-            cursor.execute("SELECT id, name, ip, status FROM switches LIMIT 5")  # Limit to 5 switches
-            switches = cursor.fetchall()
-        return switches
-    except psycopg2.Error as e:
-        logger.error(f"Error fetching switches: {e}")
-        return []
 
 # Fetch switch data from PostgreSQL
 switches = fetch_switches()
